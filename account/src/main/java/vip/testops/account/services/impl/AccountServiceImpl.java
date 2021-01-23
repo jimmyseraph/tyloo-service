@@ -70,7 +70,11 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // 更新最新登录时间
-        accountMapper.updateLastLoginTime(accountDTO.getAccountId());
+        int col = accountMapper.updateLastLoginTime(accountDTO.getAccountId());
+        if(col == 0){
+            response.serviceError("update login time error");
+            return;
+        }
 
         // 生成token
         Map<String, Object> claim = new HashMap<>();

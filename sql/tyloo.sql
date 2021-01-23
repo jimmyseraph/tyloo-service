@@ -52,3 +52,12 @@ create table tyloodb.t_project(
     `createTime` datetime comment '创建时间',
     `updateTime` datetime comment '修改时间'
 ) comment '项目信息表';
+
+create table tyloodb.t_suite(
+    `suiteId` bigint auto_increment primary key comment '案例集系统ID',
+    `projectId` bigint comment '项目ID',
+    `caseId` bigint comment '用例ID',
+    `status` int comment '执行状态，0-Initial，1-Pass，2-Fail，3-Block',
+    `duration` bigint comment '执行时间',
+    `lastRun` datetime comment '最近运行时间'
+) comment '案例集信息表';
