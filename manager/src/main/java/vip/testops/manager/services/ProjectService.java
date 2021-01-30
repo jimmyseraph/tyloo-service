@@ -15,4 +15,6 @@ public interface ProjectService {
     void doRemoveProject(Long projectId, Response<?> response);
 
     void doGetDetail(Long projectId, Response<ProjectVTO> response);
+
+    void doExecuteProject(Long projectId, Response<?> response);
 }

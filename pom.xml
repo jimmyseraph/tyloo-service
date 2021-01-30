@@ -22,6 +22,7 @@
         <mybatis.version>2.1.4</mybatis.version>
         <jwt.version>3.12.0</jwt.version>
         <druid.version>1.2.3</druid.version>
+        <okhttp.version>4.9.0</okhttp.version>
     </properties>
 
     <dependencyManagement>
@@ -48,6 +49,11 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -56,6 +62,7 @@
         <module>discovery</module>
         <module>account</module>
         <module>manager</module>
+        <module>engine</module>
     </modules>
 
     <build>

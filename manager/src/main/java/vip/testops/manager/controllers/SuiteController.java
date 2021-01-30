@@ -29,7 +29,7 @@ public class SuiteController {
             response.paramMissError("caseIdList");
             return response;
         }
-
+        suiteService.doUpdateSuite(projectId, caseIdList, response);
         return response;
     }
 }

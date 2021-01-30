@@ -1,9 +1,6 @@
 package vip.testops.manager.mappers;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import vip.testops.manager.entities.dto.DetailDTO;
 import vip.testops.manager.entities.dto.SuiteDTO;
 import vip.testops.manager.entities.vto.SuiteVTO;
@@ -36,4 +33,7 @@ public interface SuiteMapper {
             "#{duration}, " +
             "null)")
     int addSuite(SuiteDTO suiteDTO);
+
+    @Update("update t_suite set status=#{status} where projectId=#{projectId}")
+    int updateStatusByProjectId(Long projectId, Integer status);
 }

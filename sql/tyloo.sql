@@ -61,3 +61,20 @@ create table tyloodb.t_suite(
     `duration` bigint comment '执行时间',
     `lastRun` datetime comment '最近运行时间'
 ) comment '案例集信息表';
+
+create table tyloodb.t_exec_result(
+    `execId` bigint auto_increment primary key comment '执行记录系统ID',
+    `projectId` bigint comment '项目ID',
+    `caseId` bigint comment '用例ID',
+    `caseName` varchar(50) comment '用例名称',
+    `requestHeaders` text comment '请求头',
+    `url` varchar(200) comment 'url地址',
+    `method` varchar(6) comment '请求方法',
+    `requestBody` text comment '请求的body',
+    `responseHeaders` text comment '响应头',
+    `responseBody` text comment '响应的body内容',
+    `status` varchar(10) comment '执行结果',
+    `message` text comment '执行日志',
+    `duration` bigint comment '执行时间（ms）',
+    `startTime` DATETIME comment '开始执行时间'
+) comment '用例执行记录表';

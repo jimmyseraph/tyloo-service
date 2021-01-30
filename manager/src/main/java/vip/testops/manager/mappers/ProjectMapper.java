@@ -26,4 +26,7 @@ public interface ProjectMapper {
 
     @Select("select * from t_project where projectId=#{projectId}")
     ProjectDTO getProjectById(Long projectId);
+
+    @Update("update t_project set status=#{status} where projectId=#{projectId}")
+    int updateProjectStatusById(Long projectId, Integer status);
 }
