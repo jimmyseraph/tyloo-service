@@ -36,4 +36,7 @@ public interface SuiteMapper {
 
     @Update("update t_suite set status=#{status} where projectId=#{projectId}")
     int updateStatusByProjectId(Long projectId, Integer status);
+
+    @Update("update t_suite set status=#{status} where projectId=#{projectId} and caseId=#{caseId}")
+    int updateStatusByProjectIdAndCaseId(Long projectId, Long caseId, Integer status);
 }

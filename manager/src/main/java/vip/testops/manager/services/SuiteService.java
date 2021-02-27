@@ -7,4 +7,5 @@ import java.util.List;
 public interface SuiteService {
 
     void doUpdateSuite(Long projectId, List<Long> caseIdList, Response<?> response);
+    void doUpdateSuiteStatus(Long projectId, Long caseId, Integer status, Response<?> response);
 }

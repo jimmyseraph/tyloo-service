@@ -190,4 +190,10 @@ public class ProjectServiceImpl implements ProjectService {
         response.commonSuccess();
     }
 
+    @Override
+    public void doUpdateProjectStatus(Long projectId, Integer status, Response<?> response) {
+        projectMapper.updateProjectStatusById(projectId, status);
+        response.commonSuccess();
+    }
+
 }

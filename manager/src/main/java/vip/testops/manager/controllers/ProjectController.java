@@ -83,7 +83,22 @@ public class ProjectController {
     @ResponseBody
     public Response<?> projectExecute(@PathVariable("id") Long projectId){
         Response<?> response = new Response<>();
+        projectService.doExecuteProject(projectId, response);
+        return response;
+    }
 
+    @GetMapping("/{id}/update")
+    @ResponseBody
+    public Response<?> projectStatusUpdate(
+            @PathVariable("id") Long projectId,
+            @RequestParam(value = "status", required = false) Integer status
+    ){
+        Response<?> response = new Response<>();
+        if(status == null){
+            response.paramMissError("status");
+            return response;
+        }
+        projectService.doUpdateProjectStatus(projectId, status, response);
         return response;
     }
 }

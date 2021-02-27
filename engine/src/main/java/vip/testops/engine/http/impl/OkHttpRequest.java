@@ -1,7 +1,6 @@
 package vip.testops.engine.http.impl;
 
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vip.testops.engine.http.EasyRequest;
@@ -10,6 +9,7 @@ import vip.testops.engine.http.EasyResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class OkHttpRequest implements EasyRequest {
@@ -77,7 +77,6 @@ public class OkHttpRequest implements EasyRequest {
 
     @Override
     public Map<String, String> getHeaders() {
-
         return headers;
     }
 
@@ -88,36 +87,75 @@ public class OkHttpRequest implements EasyRequest {
 
     @Override
     public EasyRequest addCookie(String cookieName, String cookieValue) {
-        return null;
+        this.cookies.put(cookieName, cookieValue);
+        return this;
     }
 
     @Override
     public EasyRequest setCookie(Map<String, String> cookieMap) {
-        return null;
+        this.cookies = cookieMap;
+        return this;
     }
 
     @Override
     public EasyRequest setBody(String mimeType, String content) {
-        return null;
+        MediaType mediaType = MediaType.parse(mimeType);
+        this.requestBody = RequestBody.create(content, mediaType);
+        logger.info("request body: {}", content);
+        return this;
     }
 
     @Override
     public EasyRequest setBody(RequestBody body) {
-        return null;
+        this.requestBody = body;
+        logger.info("request body: {}", body);
+        return this;
     }
 
     @Override
     public EasyRequest setMethod(String method) {
-        return null;
+        this.method = method.toUpperCase();
+        return this;
     }
 
     @Override
     public String getMethod() {
-        return null;
+        return this.method;
     }
 
     @Override
     public EasyResponse execute() throws IOException {
-        return null;
+        Request.Builder newBuilder = new Request.Builder();
+        // 拼装URL
+        String url = expandUrl(this.url);
+        logger.info("target url -> {}", url);
+        newBuilder.url(url);
+
+        // 设置header
+        if(headers != null){
+            headers.forEach(newBuilder::addHeader);
+        }
+
+        // 设置cookie
+        if(cookies != null){
+            StringBuilder cookieString = new StringBuilder();
+            cookies.forEach((k, v) -> cookieString.append(k).append("=").append(v).append(";"));
+            newBuilder.addHeader("Cookie", cookieString.toString());
+        }
+        // 设置请求的方法和body
+        newBuilder.method(this.method, this.requestBody);
+        Request request = newBuilder.build();
+        Response response = newClient.newCall(request).execute();
+        logger.info("get response: {}", response);
+        return new OkHttpResponse(url, response);
+    }
+
+    private String expandUrl(String url) {
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
+        if(this.queryParams != null && this.queryParams.size() > 0){
+            logger.info("Query params: {}", this.queryParams);
+            queryParams.forEach(urlBuilder::setQueryParameter);
+        }
+        return urlBuilder.build().toString();
     }
 }

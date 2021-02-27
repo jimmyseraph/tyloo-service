@@ -32,4 +32,20 @@ public class SuiteController {
         suiteService.doUpdateSuite(projectId, caseIdList, response);
         return response;
     }
+
+    @GetMapping("/{projectId}/{caseId}/update")
+    @ResponseBody
+    public Response<?> updateSuiteStatus(
+            @PathVariable Long projectId,
+            @PathVariable Long caseId,
+            @RequestParam(value = "status", required = false) Integer status
+    ){
+        Response<?> response = new Response<>();
+        if(status == null) {
+            response.paramMissError("status");
+            return response;
+        }
+        suiteService.doUpdateSuiteStatus(projectId, caseId, status, response);
+        return response;
+    }
 }

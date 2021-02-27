@@ -23,6 +23,7 @@
         <jwt.version>3.12.0</jwt.version>
         <druid.version>1.2.3</druid.version>
         <okhttp.version>4.9.0</okhttp.version>
+        <json-path.version>2.5.0</json-path.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +55,11 @@
                 <artifactId>okhttp</artifactId>
                 <version>${okhttp.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -63,6 +69,7 @@
         <module>account</module>
         <module>manager</module>
         <module>engine</module>
+        <module>gateway</module>
     </modules>
 
     <build>

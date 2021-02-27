@@ -12,7 +12,5 @@ public interface EasyResponse {
 
     Headers getHeaders();
 
-    String getCookie(String cookieName);
-
     int getCode();
 }

@@ -62,4 +62,13 @@ public class SuiteServiceImpl implements SuiteService {
         }
         response.commonSuccess();
     }
+
+    @Override
+    public void doUpdateSuiteStatus(Long projectId, Long caseId, Integer status, Response<?> response) {
+        if(suiteMapper.updateStatusByProjectIdAndCaseId(projectId, caseId, status) != 1){
+            response.serviceError("suite not exist");
+        }else {
+            response.commonSuccess();
+        }
+    }
 }

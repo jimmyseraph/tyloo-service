@@ -7,12 +7,16 @@ import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import vip.testops.engine.api.ManagerApi;
 import vip.testops.engine.common.Response;
+import vip.testops.engine.entities.enums.ProjectStatus;
 import vip.testops.engine.entities.enums.SuiteStatues;
 import vip.testops.engine.entities.vto.ExecResultVTO;
 import vip.testops.engine.entities.vto.ExecutionVTO;
 import vip.testops.engine.mappers.ExecResultMapper;
 import vip.testops.engine.services.ExecutionService;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 @Slf4j
@@ -27,6 +31,7 @@ public class Receiver {
 
     private ExecutionService executionService;
     private ExecResultMapper execResultMapper;
+    private ManagerApi managerApi;
 
     @Autowired
     public void setExecutionService(ExecutionService executionService) {
@@ -38,11 +43,17 @@ public class Receiver {
         this.execResultMapper = execResultMapper;
     }
 
+    @Autowired
+    public void setManagerApi(ManagerApi managerApi) {
+        this.managerApi = managerApi;
+    }
+
     @RabbitHandler
     public void process(String msg){
         log.info("receive execution plan --> {}", msg);
         // 处理执行计划
         ObjectMapper objectMapper = new ObjectMapper();
+        AtomicReference<Integer> projectStatus = new AtomicReference<>(ProjectStatus.PASS.getKey());
         try {
             ExecutionVTO executionVTO = objectMapper.readValue(msg, ExecutionVTO.class);
             executionVTO.getCaseList().forEach(caseVTO -> {
@@ -54,10 +65,19 @@ public class Receiver {
                 execResultMapper.addExecResult(execResultVTO);
                 // 将case的执行结果回写到t_suite表中，通过接口调用方式
                 Integer status = SuiteStatues.getByValue(execResultVTO.getStatus()).getKey();
-
+                Response<?> resp = managerApi.updateSuiteStatus(executionVTO.getProjectId(), caseVTO.getCaseId(), status);
+                if(resp.getCode() != 1000){
+                    log.error("suite status update failed. projectId={}, caseId={}", executionVTO.getProjectId(), caseVTO.getCaseId());
+                }
+                if(!execResultVTO.getStatus().equals(SuiteStatues.PASS.getValue())){
+                    projectStatus.set(ProjectStatus.FAIL.getKey());
+                }
             });
             // 将整个project执行结果回写到t_project表中，通过接口调用方式
-
+            Response<?> resp = managerApi.projectStatusUpdate(executionVTO.getProjectId(), projectStatus.get());
+            if(resp.getCode() != 1000) {
+                log.error("project status update failed. projectId={}", executionVTO.getProjectId());
+            }
         } catch (JsonProcessingException e) {
             log.error("system error while parsing execution plan.", e);
         }

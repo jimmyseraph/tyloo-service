@@ -17,4 +17,6 @@ public interface ProjectService {
     void doGetDetail(Long projectId, Response<ProjectVTO> response);
 
     void doExecuteProject(Long projectId, Response<?> response);
+
+    void doUpdateProjectStatus(Long projectId, Integer status, Response<?> response);
 }
