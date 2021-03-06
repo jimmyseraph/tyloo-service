@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
         log.info("get secret key from redis: {}", secretKey);
         Claim claim = JWTUtil.verifyToken(token, secretKey);
         AccountVTO accountVTO = new AccountVTO();
-        accountVTO.setAccountId((Long)claim.asMap().get("id"));
+        accountVTO.setAccountId(Long.parseLong(claim.asMap().get("id").toString()));
         accountVTO.setAccountName(claim.asMap().get("username").toString());
         accountVTO.setEmail(claim.asMap().get("email").toString());
         // 刷新redis中token过期时间

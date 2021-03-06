@@ -29,8 +29,11 @@ public class ExecutionServiceImpl implements ExecutionService {
         // 发送http请求
         EasyRequest easyRequest = new OkHttpRequest();
         easyRequest.setUrl(caseVTO.getUrl())
-                .setMethod(caseVTO.getMethod())
-                .setBody(EasyRequest.JSON, caseVTO.getBody());
+                .setMethod(caseVTO.getMethod());
+        if(!easyRequest.getMethod().equalsIgnoreCase("GET")){
+            easyRequest.setBody(EasyRequest.JSON, caseVTO.getBody()==null?"":caseVTO.getBody());
+        }
+
         caseVTO.getHeaders().forEach(header -> easyRequest.addHeader(header.getName(), header.getValue()));
         try {
             long startTime = System.currentTimeMillis();

@@ -51,7 +51,7 @@ public class SuiteServiceImpl implements SuiteService {
         // 添加新的关联关系
         for(Long caseId : caseIdList){
             CaseDTO caseDTO = caseMapper.getCaseById(caseId);
-            if(caseDTO == null){
+            if(caseDTO != null){
                 SuiteDTO suiteDTO = new SuiteDTO();
                 suiteDTO.setProjectId(projectId);
                 suiteDTO.setCaseId(caseId);
@@ -64,8 +64,8 @@ public class SuiteServiceImpl implements SuiteService {
     }
 
     @Override
-    public void doUpdateSuiteStatus(Long projectId, Long caseId, Integer status, Response<?> response) {
-        if(suiteMapper.updateStatusByProjectIdAndCaseId(projectId, caseId, status) != 1){
+    public void doUpdateSuiteStatus(Long projectId, Long caseId, Long duration, Integer status, Response<?> response) {
+        if(suiteMapper.updateStatusByProjectIdAndCaseId(projectId, caseId, duration, status) != 1){
             response.serviceError("suite not exist");
         }else {
             response.commonSuccess();

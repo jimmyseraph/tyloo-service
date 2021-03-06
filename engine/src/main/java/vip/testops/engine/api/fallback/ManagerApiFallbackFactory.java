@@ -11,7 +11,7 @@ public class ManagerApiFallbackFactory implements FallbackFactory<ManagerApi> {
     public ManagerApi create(Throwable throwable) {
         return new ManagerApi() {
             @Override
-            public Response<?> updateSuiteStatus(Long projectId, Long caseId, Integer status) {
+            public Response<?> updateSuiteStatus(Long projectId, Long caseId, Long duration, Integer status) {
                 Response<?> response = new Response<>();
                 response.serviceError("Internal service not available");
                 return response;

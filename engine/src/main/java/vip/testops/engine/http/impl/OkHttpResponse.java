@@ -6,6 +6,7 @@ import okhttp3.Headers;
 import okhttp3.Response;
 import vip.testops.engine.http.EasyResponse;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class OkHttpResponse implements EasyResponse {
@@ -18,7 +19,11 @@ public class OkHttpResponse implements EasyResponse {
     public OkHttpResponse(String url, Response response) {
         this.url = url;
         this.response = response;
-        this.bodyString = Objects.requireNonNull(response.body()).toString();
+        try {
+            this.bodyString = Objects.requireNonNull(response.body()).string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.headers = response.headers();
     }
 

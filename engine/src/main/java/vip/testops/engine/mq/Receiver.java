@@ -16,6 +16,7 @@ import vip.testops.engine.entities.vto.ExecutionVTO;
 import vip.testops.engine.mappers.ExecResultMapper;
 import vip.testops.engine.services.ExecutionService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -25,7 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
                 exchange = @Exchange(value = "${mq.config.exchange}", type = ExchangeTypes.DIRECT),
                 key = "${mq.config.routing-key}",
                 value = @Queue(value = "${mq.config.queue-name}", autoDelete = "false")
-        )
+        ),
+        containerFactory = "rabbitListenerContainerFactory"
 )
 public class Receiver {
 
@@ -49,13 +51,19 @@ public class Receiver {
     }
 
     @RabbitHandler
-    public void process(String msg){
-        log.info("receive execution plan --> {}", msg);
+    public void process(byte[] msg){
+        String message = "";
+        try {
+            message = new String(msg, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        log.info("receive execution plan --> {}", message);
         // 处理执行计划
         ObjectMapper objectMapper = new ObjectMapper();
         AtomicReference<Integer> projectStatus = new AtomicReference<>(ProjectStatus.PASS.getKey());
         try {
-            ExecutionVTO executionVTO = objectMapper.readValue(msg, ExecutionVTO.class);
+            ExecutionVTO executionVTO = objectMapper.readValue(message, ExecutionVTO.class);
             executionVTO.getCaseList().forEach(caseVTO -> {
                 // 执行具体的case
                 Response<ExecResultVTO> response = new Response<>();
@@ -65,7 +73,7 @@ public class Receiver {
                 execResultMapper.addExecResult(execResultVTO);
                 // 将case的执行结果回写到t_suite表中，通过接口调用方式
                 Integer status = SuiteStatues.getByValue(execResultVTO.getStatus()).getKey();
-                Response<?> resp = managerApi.updateSuiteStatus(executionVTO.getProjectId(), caseVTO.getCaseId(), status);
+                Response<?> resp = managerApi.updateSuiteStatus(executionVTO.getProjectId(), caseVTO.getCaseId(), response.getData().getDuration(), status);
                 if(resp.getCode() != 1000){
                     log.error("suite status update failed. projectId={}, caseId={}", executionVTO.getProjectId(), caseVTO.getCaseId());
                 }

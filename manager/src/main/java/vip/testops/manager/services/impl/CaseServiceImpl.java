@@ -84,6 +84,7 @@ public class CaseServiceImpl implements CaseService {
             List<AssertionDTO> assertionDTOList = assertionsMapper.getAssertionsByCaseId(item.getCaseId());
             caseVTO.setHeaders(headerDTOList);
             caseVTO.setAssertions(assertionDTOList);
+            caseVTOList.add(caseVTO);
         });
         response.dataSuccess(caseVTOList);
     }
@@ -100,25 +101,31 @@ public class CaseServiceImpl implements CaseService {
             response.serviceError("add case failed");
             return;
         }
-        caseVTO.getHeaders().forEach(header -> {
-            HeaderDTO headerDTO = new HeaderDTO();
-            headerDTO.setName(header.getName());
-            headerDTO.setValue(header.getValue());
-            headerDTO.setCaseId(caseDTO.getCaseId());
-            if(headerMapper.addHeader(headerDTO) != 1){
-                log.warn("add header {} to database failed", headerDTO);
-            }
-        });
-        caseVTO.getAssertions().forEach(assertion -> {
-            AssertionDTO assertionDTO = new AssertionDTO();
-            assertionDTO.setActual(assertion.getActual());
-            assertionDTO.setOp(assertion.getOp());
-            assertionDTO.setExpected(assertion.getExpected());
-            assertionDTO.setCaseId(caseDTO.getCaseId());
-            if(assertionsMapper.addAssertion(assertionDTO) != 1){
-                log.warn("add assertion {} to database failed", assertionDTO);
-            }
-        });
+        if(caseVTO.getHeaders() != null){
+            caseVTO.getHeaders().forEach(header -> {
+                HeaderDTO headerDTO = new HeaderDTO();
+                headerDTO.setName(header.getName());
+                headerDTO.setValue(header.getValue());
+                headerDTO.setCaseId(caseDTO.getCaseId());
+                if(headerMapper.addHeader(headerDTO) != 1){
+                    log.warn("add header {} to database failed", headerDTO);
+                }
+            });
+
+        }
+        if(caseVTO.getAssertions() != null){
+
+            caseVTO.getAssertions().forEach(assertion -> {
+                AssertionDTO assertionDTO = new AssertionDTO();
+                assertionDTO.setActual(assertion.getActual());
+                assertionDTO.setOp(assertion.getOp());
+                assertionDTO.setExpected(assertion.getExpected());
+                assertionDTO.setCaseId(caseDTO.getCaseId());
+                if(assertionsMapper.addAssertion(assertionDTO) != 1){
+                    log.warn("add assertion {} to database failed", assertionDTO);
+                }
+            });
+        }
         response.commonSuccess();
     }
 

@@ -147,7 +147,9 @@ public class OkHttpRequest implements EasyRequest {
         Request request = newBuilder.build();
         Response response = newClient.newCall(request).execute();
         logger.info("get response: {}", response);
-        return new OkHttpResponse(url, response);
+        OkHttpResponse okHttpResponse = new OkHttpResponse(url, response);
+        logger.info("response body: {}", okHttpResponse.getBody());
+        return okHttpResponse;
     }
 
     private String expandUrl(String url) {

@@ -13,6 +13,7 @@ public interface ManagerApi {
     Response<?> updateSuiteStatus(
             @PathVariable Long projectId,
             @PathVariable Long caseId,
+            @RequestParam(value = "duration", required = false) Long duration,
             @RequestParam(value = "status", required = false) Integer status
     );
 

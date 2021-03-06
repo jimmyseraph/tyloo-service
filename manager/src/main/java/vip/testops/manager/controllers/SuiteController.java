@@ -38,6 +38,7 @@ public class SuiteController {
     public Response<?> updateSuiteStatus(
             @PathVariable Long projectId,
             @PathVariable Long caseId,
+            @RequestParam(value = "duration", required = false) Long duration,
             @RequestParam(value = "status", required = false) Integer status
     ){
         Response<?> response = new Response<>();
@@ -45,7 +46,10 @@ public class SuiteController {
             response.paramMissError("status");
             return response;
         }
-        suiteService.doUpdateSuiteStatus(projectId, caseId, status, response);
+        if(duration == null) {
+            duration = -1L;
+        }
+        suiteService.doUpdateSuiteStatus(projectId, caseId, duration, status, response);
         return response;
     }
 }
